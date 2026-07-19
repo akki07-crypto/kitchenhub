@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: skillswap-hub
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: node server-dist/server/server.js
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: NODE_ENV
+        value: production
