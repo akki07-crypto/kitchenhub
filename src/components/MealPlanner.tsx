@@ -37,7 +37,7 @@ const MealPlanner: React.FC = () => {
     { id: 'dinner', name: 'Dinner', icon: '🌙' },
   ];
 
-  // Calculate totals
+  // Calculate weekly totals
   let totalCalories = 0;
   let totalProteinGrams = 0;
   let scheduledCount = 0;
@@ -61,6 +61,26 @@ const MealPlanner: React.FC = () => {
     setSelectedSlot(null);
   };
 
+  // Compute daily macro totals for active day
+  let dayCal = 0, dayProtein = 0, dayCarbs = 0, dayFat = 0;
+  const dayMeals = mealPlan[activeDay] || {};
+  Object.values(dayMeals).forEach((recipe: any) => {
+    if (recipe) {
+      dayCal += recipe.calories || 0;
+      if (recipe.protein) { const p = parseInt(recipe.protein.replace('g', ''), 10); if (!isNaN(p)) dayProtein += p; }
+      if (recipe.carbs) { const c = parseInt(recipe.carbs.replace('g', ''), 10); if (!isNaN(c)) dayCarbs += c; }
+      if (recipe.fat) { const f = parseInt(recipe.fat.replace('g', ''), 10); if (!isNaN(f)) dayFat += f; }
+    }
+  });
+
+  const getAdvice = () => {
+    if (dayCal === 0) return { message: `No meals for ${days.find(d => d.id === activeDay)?.name} yet.`, tips: 'Assign recipes to breakfast, lunch, or dinner slots below to calculate macro ratios.', variant: 'info' };
+    if (dayProtein < macroTargets.protein * 0.7) return { message: '⚠️ Daily Protein intake is low!', tips: "Add high-protein options like 'Wagyu Ribeye Steak' or 'Chef Melissa's Salmon' to reach your goal.", variant: 'warning' };
+    if (dayCal > macroTargets.calories) return { message: '🚨 Daily Calorie budget exceeded!', tips: "Replace a heavier course with 'Artisanal Burrata Salad' or a seasonal vegetable side.", variant: 'danger' };
+    return { message: '🌟 Perfect Macro Balance!', tips: 'Your planned meals align beautifully with your daily nutritional limits. Excellent work!', variant: 'success' };
+  };
+  const advice = getAdvice();
+
   return (
     <div className="container animate-fade-in" style={{ paddingBottom: '80px' }}>
       {/* Header */}
@@ -71,9 +91,7 @@ const MealPlanner: React.FC = () => {
             Weekly Menu Engine
           </span>
         </div>
-        <h1 style={{ fontSize: '3rem', marginTop: '4px', marginBottom: '16px' }}>
-          Gourmet Meal Planner
-        </h1>
+        <h1 style={{ fontSize: '3rem', marginTop: '4px', marginBottom: '16px' }}>Gourmet Meal Planner</h1>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1.05rem', lineHeight: 1.5 }}>
           Schedule your weekly breakfast, lunch, and dinner menus with automated macro calculation and 1-click grocery list export.
         </p>
@@ -99,214 +117,148 @@ const MealPlanner: React.FC = () => {
           <div className="glass-panel" style={{ padding: '12px 24px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontSize: '1.3rem' }}>💪</span>
             <div style={{ textAlign: 'left' }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Total Protein</span>
-              <strong style={{ fontSize: '1.1rem', color: '#10b981' }}>{totalProteinGrams}g Protein</strong>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase' }}>Weekly Protein</span>
+              <strong style={{ fontSize: '1.1rem', color: '#10b981' }}>{totalProteinGrams}g</strong>
             </div>
           </div>
 
           <button
             onClick={exportMealPlanToGrocery}
             className="btn btn-primary"
-            style={{ padding: '12px 24px', borderRadius: '14px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+            style={{ padding: '12px 24px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 600 }}
           >
-            <ShoppingBag size={18} color="#07090e" />
-            Export 1-Click Weekly Grocery List
+            <ShoppingBag size={16} />
+            Export Grocery List
           </button>
         </div>
       </div>
 
-      {/* Daily Macro Budget & Tracker Dashboard */}
-      {(() => {
-        let dayCal = 0;
-        let dayProtein = 0;
-        let dayCarbs = 0;
-        let dayFat = 0;
-        
-        const dayMeals = mealPlan[activeDay] || {};
-        Object.values(dayMeals).forEach((recipe: any) => {
-          if (recipe) {
-            dayCal += recipe.calories || 0;
-            if (recipe.protein) {
-              const p = parseInt(recipe.protein.replace('g', ''), 10);
-              if (!isNaN(p)) dayProtein += p;
-            }
-            if (recipe.carbs) {
-              const c = parseInt(recipe.carbs.replace('g', ''), 10);
-              if (!isNaN(c)) dayCarbs += c;
-            }
-            if (recipe.fat) {
-              const f = parseInt(recipe.fat.replace('g', ''), 10);
-              if (!isNaN(f)) dayFat += f;
-            }
-          }
-        });
-
-        const getChefNutritionalAdvice = () => {
-          if (dayCal === 0) {
-            return {
-              message: `No meals scheduled for ${days.find(d => d.id === activeDay)?.name} yet.`,
-              tips: "Assign recipes to breakfast, lunch, or dinner slots below to calculate macro ratios.",
-              variant: 'info'
-            };
-          }
-          if (dayProtein < macroTargets.protein * 0.7) {
-            return {
-              message: "⚠️ Daily Protein intake is low!",
-              tips: "We recommend adding high-protein options like 'Wagyu Ribeye Steak' or 'Chef Melissa's Salmon' to reach your goal.",
-              variant: 'warning'
-            };
-          }
-          if (dayCal > macroTargets.calories) {
-            return {
-              message: "🚨 Daily Calorie budget exceeded!",
-              tips: "Replace one of today's heavier courses with a lighter dish like 'Artisanal Burrata Salad' or a seasonal vegetable side.",
-              variant: 'danger'
-            };
-          }
-          return {
-            message: "🌟 Perfect Macro Balance!",
-            tips: "Your planned meals align beautifully with your daily nutritional limits. Excellent work!",
-            variant: 'success'
-          };
-        };
-
-        const advice = getChefNutritionalAdvice();
-
-        return (
-          <div className="glass-panel" style={{ borderRadius: '24px', padding: '24px', marginBottom: '40px', background: 'rgba(15, 22, 36, 0.4)' }}>
-            {/* Header/Day Selector */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '16px', marginBottom: '20px' }}>
-              <div>
-                <h2 style={{ fontSize: '1.4rem', margin: 0, fontFamily: 'Playfair Display, serif' }}>🎯 Daily Macro Budget & Tracker</h2>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>Select a day to track and balance your macronutrient values.</p>
-              </div>
-              
-              {/* Day Tab Buttons */}
-              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', maxWidth: '100%' }}>
-                {days.map(d => (
-                  <button
-                    key={d.id}
-                    onClick={() => setActiveDay(d.id)}
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: '10px',
-                      fontSize: '0.78rem',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      border: activeDay === d.id ? '1px solid var(--primary)' : '1px solid var(--border-glass)',
-                      background: activeDay === d.id ? 'var(--primary-gradient)' : 'rgba(255,255,255,0.02)',
-                      color: activeDay === d.id ? '#07090e' : 'var(--text-primary)',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    {d.name.substring(0, 3)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Grid Split */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
-              {/* Left Column: Set Budget Targets */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <h4 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Set Nutrition Goals</h4>
-                
-                {[
-                  { key: 'calories', label: 'Energy Budget', unit: 'Kcal', color: 'var(--primary)', step: 100 },
-                  { key: 'protein', label: 'Protein Target', unit: 'g', color: '#10b981', step: 10 },
-                  { key: 'carbs', label: 'Carbs Budget', unit: 'g', color: '#3b82f6', step: 10 },
-                  { key: 'fat', label: 'Fats Budget', unit: 'g', color: '#eab308', step: 5 }
-                ].map(item => (
-                  <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '10px 16px' }}>
-                    <div>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 600, display: 'block' }}>{item.label}</span>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Per day</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <button
-                        onClick={() => updateTarget(item.key, Math.max(0, (macroTargets as any)[item.key] - item.step))}
-                        style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid var(--border-glass)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      >-</button>
-                      <strong style={{ fontSize: '0.9rem', color: item.color, minWidth: '70px', textAlign: 'center' }}>
-                        {(macroTargets as any)[item.key]} {item.unit}
-                      </strong>
-                      <button
-                        onClick={() => updateTarget(item.key, (macroTargets as any)[item.key] + item.step)}
-                        style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid var(--border-glass)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      >+</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Middle Column: Daily Progress Gauges */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h4 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Daily Macros Met</h4>
-                
-                {[
-                  { label: 'Calories', actual: dayCal, target: macroTargets.calories, color: 'var(--primary-gradient)', unit: 'Kcal' },
-                  { label: 'Protein', actual: dayProtein, target: macroTargets.protein, color: 'linear-gradient(90deg, #10b981 0%, #059669 100%)', unit: 'g' },
-                  { label: 'Carbohydrates', actual: dayCarbs, target: macroTargets.carbs, color: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)', unit: 'g' },
-                  { label: 'Fats', actual: dayFat, target: macroTargets.fat, color: 'linear-gradient(90deg, #eab308 0%, #ca8a04 100%)', unit: 'g' }
-                ].map(macro => {
-                  const pct = Math.min(100, Math.round((macro.actual / macro.target) * 100)) || 0;
-                  const isOverBudget = macro.actual > macro.target;
-                  return (
-                    <div key={macro.label}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '6px' }}>
-                        <span style={{ fontWeight: 600 }}>{macro.label}</span>
-                        <span style={{ color: isOverBudget && macro.label === 'Calories' ? '#ef4444' : 'var(--text-secondary)' }}>
-                          <strong>{macro.actual}</strong> / {macro.target} {macro.unit} ({pct}%)
-                        </span>
-                      </div>
-                      <div style={{ height: '8px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
-                        <div style={{
-                          width: `${pct}%`,
-                          height: '100%',
-                          background: isOverBudget && macro.label === 'Calories' ? 'linear-gradient(90deg, #f87171 0%, #ef4444 100%)' : macro.color,
-                          borderRadius: '4px',
-                          transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-                        }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Right Column: AI Chef Advisor */}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <h4 style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Chef Nutritionist Advice</h4>
-                
-                <div style={{
-                  flex: 1,
-                  borderRadius: '16px',
-                  padding: '20px',
-                  background: advice.variant === 'warning' ? 'rgba(234, 179, 8, 0.04)' : advice.variant === 'danger' ? 'rgba(239, 68, 68, 0.04)' : advice.variant === 'success' ? 'rgba(16, 185, 129, 0.04)' : 'rgba(255,255,255,0.01)',
-                  border: `1px solid ${advice.variant === 'warning' ? 'rgba(234, 179, 8, 0.15)' : advice.variant === 'danger' ? 'rgba(239, 68, 68, 0.15)' : advice.variant === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'var(--border-glass)'}`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  justifyContent: 'center'
-                }}>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: advice.variant === 'warning' ? '#eab308' : advice.variant === 'danger' ? '#f87171' : advice.variant === 'success' ? '#34d399' : 'var(--primary)' }}>
-                    {advice.message}
-                  </div>
-                  <p style={{ fontSize: '0.82rem', lineHeight: 1.5, color: 'var(--text-secondary)', margin: 0 }}>
-                    {advice.tips}
-                  </p>
-                </div>
-              </div>
+      {/* ── DAILY MACRO BUDGET & TRACKER ── */}
+      <div style={{
+        borderRadius: '24px',
+        padding: '28px',
+        marginBottom: '40px',
+        background: 'linear-gradient(135deg, rgba(7,9,14,0.97) 0%, rgba(12,16,26,0.97) 100%)',
+        border: '1px solid rgba(197,168,128,0.22)',
+        boxShadow: '0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(197,168,128,0.07)'
+      }}>
+        {/* Header Row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid rgba(197,168,128,0.1)', paddingBottom: '20px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg,#c5a880,#9a7a50)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>🎯</div>
+            <div>
+              <h2 style={{ fontSize: '1.4rem', margin: 0, fontFamily: 'Playfair Display, serif', color: '#ffffff', fontWeight: 700 }}>Daily Macro Budget &amp; Tracker</h2>
+              <p style={{ fontSize: '0.76rem', color: '#475569', margin: 0 }}>Select a day to track and balance your macronutrient values.</p>
             </div>
           </div>
-        );
-      })()}
+
+          {/* Day Tab Buttons */}
+          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+            {days.map(d => (
+              <button
+                key={d.id}
+                onClick={() => setActiveDay(d.id)}
+                style={{
+                  padding: '7px 13px',
+                  borderRadius: '10px',
+                  fontSize: '0.76rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: activeDay === d.id ? '1px solid rgba(197,168,128,0.55)' : '1px solid rgba(255,255,255,0.06)',
+                  background: activeDay === d.id ? 'linear-gradient(135deg,#c5a880,#9a7a50)' : 'rgba(255,255,255,0.03)',
+                  color: activeDay === d.id ? '#07090e' : '#64748b',
+                  transition: 'all 0.18s',
+                  boxShadow: activeDay === d.id ? '0 3px 14px rgba(197,168,128,0.28)' : 'none'
+                }}
+              >
+                {d.name.substring(0, 3)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 3-Column Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+
+          {/* LEFT — Set Goals */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <h4 style={{ fontSize: '0.62rem', color: '#475569', margin: '0 0 8px 0', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700 }}>Set Nutrition Goals</h4>
+            {[
+              { key: 'calories', label: 'Energy Budget', unit: 'Kcal', color: '#c5a880', step: 100 },
+              { key: 'protein',  label: 'Protein Target', unit: 'g',    color: '#10b981', step: 10  },
+              { key: 'carbs',    label: 'Carbs Budget',   unit: 'g',    color: '#3b82f6', step: 10  },
+              { key: 'fat',      label: 'Fats Budget',    unit: 'g',    color: '#f59e0b', step: 5   },
+            ].map(item => (
+              <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '11px 14px' }}>
+                <div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#e2e8f0', display: 'block' }}>{item.label}</span>
+                  <span style={{ fontSize: '0.66rem', color: '#334155' }}>Per day</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <button onClick={() => updateTarget(item.key, Math.max(0, (macroTargets as any)[item.key] - item.step))} style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.09)', background: 'rgba(255,255,255,0.04)', color: '#64748b', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>−</button>
+                  <strong style={{ fontSize: '0.9rem', color: item.color, minWidth: '66px', textAlign: 'center', fontFamily: 'monospace' }}>{(macroTargets as any)[item.key]} {item.unit}</strong>
+                  <button onClick={() => updateTarget(item.key, (macroTargets as any)[item.key] + item.step)} style={{ width: '26px', height: '26px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.09)', background: 'rgba(255,255,255,0.04)', color: '#64748b', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>+</button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* MIDDLE — Progress Bars */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <h4 style={{ fontSize: '0.62rem', color: '#475569', margin: '0 0 8px 0', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700 }}>Daily Macros Met</h4>
+            {[
+              { label: 'Calories',      actual: dayCal,     target: macroTargets.calories, color: '#c5a880', glow: 'rgba(197,168,128,0.45)', unit: 'Kcal' },
+              { label: 'Protein',       actual: dayProtein, target: macroTargets.protein,  color: '#10b981', glow: 'rgba(16,185,129,0.45)',  unit: 'g'    },
+              { label: 'Carbohydrates', actual: dayCarbs,   target: macroTargets.carbs,    color: '#3b82f6', glow: 'rgba(59,130,246,0.45)',  unit: 'g'    },
+              { label: 'Fats',          actual: dayFat,     target: macroTargets.fat,       color: '#f59e0b', glow: 'rgba(245,158,11,0.45)',  unit: 'g'    },
+            ].map(macro => {
+              const pct = Math.min(100, Math.round((macro.actual / macro.target) * 100)) || 0;
+              const isOver = macro.actual > macro.target && macro.label === 'Calories';
+              return (
+                <div key={macro.label}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '7px' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#e2e8f0' }}>{macro.label}</span>
+                    <span style={{ fontSize: '0.73rem', color: '#475569' }}>
+                      <strong style={{ color: isOver ? '#f87171' : macro.color, fontSize: '0.86rem' }}>{macro.actual}</strong>
+                      <span style={{ color: '#1e293b' }}> / </span>
+                      {macro.target} {macro.unit}
+                      <span style={{ marginLeft: '5px', background: isOver ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)', padding: '1px 6px', borderRadius: '8px', fontSize: '0.66rem', color: isOver ? '#f87171' : '#475569' }}>{pct}%</span>
+                    </span>
+                  </div>
+                  <div style={{ height: '7px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                    <div style={{
+                      width: `${pct}%`, height: '100%',
+                      background: isOver ? 'linear-gradient(90deg,#f87171,#ef4444)' : macro.color,
+                      borderRadius: '10px',
+                      transition: 'width 0.5s cubic-bezier(0.4,0,0.2,1)',
+                      boxShadow: pct > 0 ? `0 0 8px ${isOver ? 'rgba(239,68,68,0.5)' : macro.glow}` : 'none'
+                    }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* RIGHT — Chef Advice */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <h4 style={{ fontSize: '0.62rem', color: '#475569', margin: '0 0 10px 0', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700 }}>Chef Nutritionist Advice</h4>
+            <div style={{
+              flex: 1, borderRadius: '16px', padding: '20px',
+              background: advice.variant === 'warning' ? 'rgba(234,179,8,0.06)' : advice.variant === 'danger' ? 'rgba(239,68,68,0.06)' : advice.variant === 'success' ? 'rgba(16,185,129,0.06)' : 'rgba(197,168,128,0.04)',
+              border: `1px solid ${advice.variant === 'warning' ? 'rgba(234,179,8,0.22)' : advice.variant === 'danger' ? 'rgba(239,68,68,0.22)' : advice.variant === 'success' ? 'rgba(16,185,129,0.22)' : 'rgba(197,168,128,0.13)'}`,
+              display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center'
+            }}>
+              <div style={{ fontSize: '0.92rem', fontWeight: 700, color: advice.variant === 'warning' ? '#fbbf24' : advice.variant === 'danger' ? '#f87171' : advice.variant === 'success' ? '#34d399' : '#c5a880' }}>
+                {advice.message}
+              </div>
+              <p style={{ fontSize: '0.82rem', lineHeight: 1.6, color: '#64748b', margin: 0 }}>{advice.tips}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* 7-Day Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '24px'
-      }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
         {days.map(day => (
           <div key={day.id} className="glass-panel" style={{ borderRadius: '20px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ borderBottom: '1px solid var(--border-glass)', paddingBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -314,7 +266,6 @@ const MealPlanner: React.FC = () => {
               <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>7-Day Schedule</span>
             </div>
 
-            {/* Slots */}
             {slots.map(slot => {
               const recipe = mealPlan[day.id]?.[slot.id];
               return (
@@ -324,11 +275,7 @@ const MealPlanner: React.FC = () => {
                       <span>{slot.icon}</span> {slot.name}
                     </span>
                     {recipe && (
-                      <button
-                        onClick={() => removeFromMealPlan(day.id, slot.id)}
-                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 0 }}
-                        title="Remove meal"
-                      >
+                      <button onClick={() => removeFromMealPlan(day.id, slot.id)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 0 }} title="Remove meal">
                         <Trash2 size={14} />
                       </button>
                     )}
@@ -338,10 +285,7 @@ const MealPlanner: React.FC = () => {
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                       <img src={recipe.image} alt={recipe.title} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
                       <div style={{ flex: 1, overflow: 'hidden' }}>
-                        <h4
-                          onClick={() => { setActiveRecipeId(recipe.id); setCurrentView('recipes'); }}
-                          style={{ fontSize: '0.85rem', margin: '0 0 2px 0', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }}
-                        >
+                        <h4 onClick={() => { setActiveRecipeId(recipe.id); setCurrentView('recipes'); }} style={{ fontSize: '0.85rem', margin: '0 0 2px 0', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }}>
                           {recipe.title}
                         </h4>
                         <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'flex', gap: '8px' }}>
@@ -353,20 +297,7 @@ const MealPlanner: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => setSelectedSlot({ day: day.id, slot: slot.id })}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: '8px',
-                        background: 'transparent',
-                        border: '1px dashed var(--border-glass)',
-                        color: 'var(--text-muted)',
-                        fontSize: '0.75rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px'
-                      }}
+                      style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'transparent', border: '1px dashed var(--border-glass)', color: 'var(--text-muted)', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                     >
                       <Plus size={14} /> Assign Recipe
                     </button>
@@ -380,28 +311,9 @@ const MealPlanner: React.FC = () => {
 
       {/* Recipe Selection Modal */}
       {selectedSlot && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(7, 9, 14, 0.85)',
-          backdropFilter: 'blur(12px)',
-          zIndex: 10001,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px'
-        }}>
-          <div className="glass-panel animate-fade-in" style={{
-            width: '100%',
-            maxWidth: '550px',
-            borderRadius: '24px',
-            padding: '24px',
-            position: 'relative'
-          }}>
-            <button
-              onClick={() => setSelectedSlot(null)}
-              style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
-            >
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(7,9,14,0.85)', backdropFilter: 'blur(12px)', zIndex: 10001, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '550px', borderRadius: '24px', padding: '24px', position: 'relative' }}>
+            <button onClick={() => setSelectedSlot(null)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
               <X size={20} />
             </button>
 
@@ -417,16 +329,7 @@ const MealPlanner: React.FC = () => {
                 <div
                   key={recipe.id}
                   onClick={() => handleSelectRecipeForSlot(recipe)}
-                  style={{
-                    padding: '12px',
-                    borderRadius: '12px',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid var(--border-glass)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer'
-                  }}
+                  style={{ padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-glass)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
                   className="glass-panel-hover"
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

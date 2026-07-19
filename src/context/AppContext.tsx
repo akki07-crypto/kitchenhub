@@ -638,8 +638,66 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
+  // Demo users — always available offline (no MongoDB needed)
+  const DEMO_USERS: IUser[] = [
+    {
+      id: 'demo-user-alex',
+      name: 'Alex Johnson',
+      email: 'alex@kitchenhub.com',
+      password: 'password',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+      bio: 'Home Cook · Passionate about Italian and Asian fusion.',
+      level: 'Home Chef',
+      savedRecipes: [],
+      cookedVersions: [],
+      badges: ['🍳 First Cook', '⭐ Recipe Saver'],
+      role: 'user'
+    },
+    {
+      id: 'demo-chef-melissa',
+      name: 'Chef Melissa Laurent',
+      email: 'melissa@kitchenhub.com',
+      password: 'chef123',
+      avatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=150',
+      bio: 'Professional Chef · Classic French Sauces & Modern Plating.',
+      level: 'Master Chef',
+      savedRecipes: [],
+      cookedVersions: [],
+      badges: ['👨‍🍳 Verified Chef', '🏆 Recipe Creator', '⭐ Top Rated'],
+      role: 'chef'
+    },
+    {
+      id: 'demo-admin',
+      name: 'Kitchen Hub Admin',
+      email: 'admin@kitchenhub.com',
+      password: 'admin123',
+      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150',
+      bio: 'Platform Administrator · Managing the Kitchen Hub ecosystem.',
+      level: 'Master Chef',
+      savedRecipes: [],
+      cookedVersions: [],
+      badges: ['🛡️ Admin', '👨‍🍳 Verified Chef'],
+      role: 'admin'
+    }
+  ];
+
   // Auth Operations - Validates typed email & password credentials against backend
   const login = async (email: string, password: string): Promise<LoginResponse> => {
+    // 1. Always try demo users first (works fully offline)
+    const demoMatch = DEMO_USERS.find(
+      u => u.email?.toLowerCase() === email.toLowerCase() && u.password === password
+    );
+    if (demoMatch) {
+      const { password: _pw, ...safeUser } = demoMatch;
+      localStorage.setItem('kh_user_id', safeUser.id);
+      setCurrentUser(safeUser as IUser);
+      setIsLoggedIn(true);
+      setShowAuthModal(false);
+      showToast(`Welcome back, ${safeUser.name}! 👋`, 'success');
+      return { success: true };
+    }
+
+    // 2. Try backend (MongoDB) for real registered users
     try {
       const res = await fetch('/api/users/login', {
         method: 'POST',
@@ -658,8 +716,8 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         return { success: false, error: data.error || 'Invalid credentials.' };
       }
     } catch (err) {
-      console.warn('Failed to login:', err);
-      return { success: false, error: 'Database network error. Try again.' };
+      console.warn('Backend unavailable, only demo accounts supported offline.');
+      return { success: false, error: 'Invalid email or password.' };
     }
   };
 

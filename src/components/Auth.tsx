@@ -296,7 +296,7 @@ const Auth: React.FC = () => {
               Authorize Credentials
             </button>
 
-            {/* Tooltip Demonstration logins */}
+            {/* Clickable Demo Credentials */}
             <div style={{
               background: 'rgba(197, 168, 128, 0.02)',
               border: '1px solid rgba(197, 168, 128, 0.12)',
@@ -307,10 +307,37 @@ const Auth: React.FC = () => {
               marginTop: '8px',
               lineHeight: 1.4
             }}>
-              <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '2px' }}>🔑 Demo Credentials:</strong>
-              • User: <span style={{ fontFamily: 'monospace', color: '#fff' }}>alex@kitchenhub.com</span> (pw: <span style={{ fontFamily: 'monospace', color: '#fff' }}>password</span>)<br />
-              • Chef: <span style={{ fontFamily: 'monospace', color: '#fff' }}>melissa@kitchenhub.com</span> (pw: <span style={{ fontFamily: 'monospace', color: '#fff' }}>chef123</span>)<br />
-              • Admin: <span style={{ fontFamily: 'monospace', color: '#fff' }}>admin@kitchenhub.com</span> (pw: <span style={{ fontFamily: 'monospace', color: '#fff' }}>admin123</span>)
+              <strong style={{ color: 'var(--primary)', display: 'block', marginBottom: '6px' }}>🔑 Demo Credentials — click to fill:</strong>
+              {[
+                { label: '👤 User', email: 'alex@kitchenhub.com', pw: 'password' },
+                { label: '👨‍🍳 Chef', email: 'melissa@kitchenhub.com', pw: 'chef123' },
+                { label: '🛡️ Admin', email: 'admin@kitchenhub.com', pw: 'admin123' },
+              ].map((demo) => (
+                <button
+                  key={demo.email}
+                  type="button"
+                  onClick={() => { setSignInEmail(demo.email); setSignInPassword(demo.pw); setSignInError(''); }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    background: signInEmail === demo.email ? 'rgba(197,168,128,0.10)' : 'rgba(255,255,255,0.02)',
+                    border: signInEmail === demo.email ? '1px solid rgba(197,168,128,0.35)' : '1px solid transparent',
+                    borderRadius: '6px',
+                    padding: '5px 8px',
+                    marginBottom: '4px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.15s',
+                    color: 'inherit'
+                  }}
+                >
+                  <span style={{ fontWeight: 600, color: 'var(--primary)', minWidth: '52px' }}>{demo.label}</span>
+                  <span style={{ fontFamily: 'monospace', color: '#fff', fontSize: '0.65rem', flex: 1, marginLeft: '8px' }}>{demo.email}</span>
+                  <span style={{ fontFamily: 'monospace', color: '#94a3b8', fontSize: '0.65rem', marginLeft: '8px' }}>pw: {demo.pw}</span>
+                </button>
+              ))}
             </div>
           </form>
         )}
