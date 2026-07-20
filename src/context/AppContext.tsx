@@ -1192,60 +1192,86 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.warn('Backend AI chat unavailable, using local intelligence:', e);
     }
 
-    // 2. Local Fallback Intelligence (Hindi, Hinglish & English)
-    setTimeout(() => {
-      let replyText = "That sounds fascinating! As your Kitchen Hub Concierge, I would suggest matching that flavor profile with a structured French Chardonnay or a crisp Sauvignon Blanc to lift the aromatics.";
-      const cleanContent = content.toLowerCase();
+      // 2. Local Fallback Intelligence (Hindi, Hinglish & English)
+      setTimeout(() => {
+        let replyText = "That sounds fascinating! As your Kitchen Hub Master Chef AI, I suggest pairing that dish with a crisp Sauvignon Blanc or a light Pinot Noir to enhance aromatics.";
+        const cleanContent = content.toLowerCase();
 
-      // Hindi / Hinglish query detection
-      const isHindi = cleanContent.includes('kaise') || cleanContent.includes('kya') || cleanContent.includes('batao') || cleanContent.includes('karo') || cleanContent.includes('banaye') || cleanContent.includes('namaste') || cleanContent.includes('khana') || cleanContent.includes('bhai') || cleanContent.includes('madad');
+        // Hindi / Hinglish query detection
+        const isHindi = cleanContent.includes('kaise') || cleanContent.includes('kya') || cleanContent.includes('batao') || cleanContent.includes('karo') || cleanContent.includes('banaye') || cleanContent.includes('namaste') || cleanContent.includes('khana') || cleanContent.includes('bhai') || cleanContent.includes('madad') || cleanContent.includes('chahiye');
 
-      if (cleanContent.includes('paneer') || cleanContent.includes('tikka') || cleanContent.includes('cottage cheese')) {
-        if (isHindi) {
-          replyText = "Paneer Tikka ke liye best tip: Paneer ko kam se kam 30 minute hung curd, roasted besan, mustard oil aur Kashmiri red chili powder ke sath marinate karein. Tandoori flavor ke liye dhungar (coal smoke) technique use karein! Pair it with a chilled Gewürztraminer or a light Pinot Noir.";
-        } else {
-          replyText = "For Paneer Tikka, marinade is king! Marinate in hung curd, roasted gram flour (besan), mustard oil, and Kashmiri chili for 30+ minutes. Smoke with a glowing charcoal briquette for authentic tandoori depth. Pair with a dry Gewürztraminer or a crisp Off-Dry Riesling.";
+        if (cleanContent.includes('paneer') || cleanContent.includes('tikka') || cleanContent.includes('cottage cheese')) {
+          replyText = isHindi
+            ? "Paneer Tikka ke liye master tip: Paneer ko 30 min hung curd, roasted besan, mustard oil aur Kashmiri chili powder mein marinate karein. Coal dhungar technique se restaurant-style smoky flavor milta hai!"
+            : "For Paneer Tikka, marinate in hung curd, roasted besan, mustard oil, and Kashmiri chili for 30+ mins. Use a glowing charcoal briquette for authentic smoky tandoori aroma!";
+        } else if (cleanContent.includes('biryani') || cleanContent.includes('pulao') || cleanContent.includes('rice')) {
+          replyText = isHindi
+            ? "Gourmet Biryani Tip: Aged Basmati rice ko 30 min soak karein aur 70% cook hone par hi dum dein. Mutton/Chicken Biryani ke sath Syrah/Shiraz wine ya chilled Jeera Raita perfect lagta hai!"
+            : "Biryani Excellence: Soak aged Basmati for 30 mins and cook to 70% before layering for dum. Pair mutton or chicken biryani with a medium-bodied Shiraz or Grenache Rosé.";
+        } else if (cleanContent.includes('butter chicken') || cleanContent.includes('chicken tikka masala') || cleanContent.includes('murg')) {
+          replyText = isHindi
+            ? "Authentic Butter Chicken ke liye: Tomatoes ko cashew paste, kasuri methi aur butter ke sath slow-cook karein. Finely strained gravy aur gentle honey touch balance banata hai!"
+            : "For velvety Butter Chicken: Strain tomato-cashew gravy through a fine sieve, finish with toasted kasuri methi, butter, and a micro-touch of honey for balance.";
+        } else if (cleanContent.includes('dal makhani') || cleanContent.includes('dal') || cleanContent.includes('lentil')) {
+          replyText = isHindi
+            ? "Dal Makhani Secrets: Urad dal aur Rajma ko kam se kam 12 ghante slow simmer karein. White butter aur Kashmiri chili ka tadka original Dhaba taste deta hai!"
+            : "Dal Makhani Secret: Slow simmer black urad dal & kidney beans for 8+ hours. Finish with white butter, fresh cream, and a gentle Kashmiri chili ghee tempering.";
+        } else if (cleanContent.includes('dosa') || cleanContent.includes('idli') || cleanContent.includes('chutney')) {
+          replyText = isHindi
+            ? "Crispy Dosa Batter Tip: Parboiled rice aur Urad dal mein 1/2 tsp fenugreek (methi) seeds mila kar 8-10 ghante ferment karein. Coconut chutney mein mustard & curry leaves ka fresh tadka dein!"
+            : "For ultra-crispy Dosa: Add 1/2 tsp fenugreek seeds while soaking rice & urad dal. Ferment for 8-10 hours at warm temperature. Temper coconut chutney with mustard seeds & curry leaves.";
+        } else if (cleanContent.includes('substitute') || cleanContent.includes('jagah') || cleanContent.includes('badle') || cleanContent.includes('replace') || cleanContent.includes('egg')) {
+          replyText = isHindi
+            ? "Ingredient Substitution Guide: Baking mein 1 egg = 1 tbsp ground flaxseed + 3 tbsp water (ya 1/4 cup dahi). Paneer/Cheese ki jagah Tofu, Maida ki jagah Oat/Almond flour use karein!"
+            : "Substitution Pro Tips: 1 Egg in baking = 1 tbsp ground flaxseeds mixed with 3 tbsp water (or 1/4 cup yogurt). Replace cream with blended cashews, and maida with oat flour.";
+        } else if (cleanContent.includes('protein') || cleanContent.includes('gym') || cleanContent.includes('muscle') || cleanContent.includes('fit')) {
+          replyText = isHindi
+            ? "High Protein Choices: Grilled Salmon (42g protein), Wagyu Steak (55g protein), Soya Chunks, Paneer/Tofu, aur Boiled Eggs. Humare Meal Planner se apna daily protein budget track karein!"
+            : "Top Protein Dishes: Grilled Salmon (42g), Seared Wagyu Steak (55g), Paneer/Tofu Skewers, and Lentil Protein Bowls. Use our Meal Planner tab to auto-calculate daily macros!";
+        } else if (cleanContent.includes('calorie') || cleanContent.includes('weight loss') || cleanContent.includes('diet') || cleanContent.includes('fat')) {
+          replyText = isHindi
+            ? "Weight Loss & Low Calorie Tips: Artisanal Burrata Salad (320 Kcal) ya Air-Fried Tofu/Chicken try karein. Deep frying ki jagah roasting use karein aur dressing mein lemon + olive oil use karein."
+            : "For weight management: Opt for low-calorie high-volume meals like Artisanal Burrata Salad (320 Kcal) or Air-Fried protein dishes. Use lemon vinaigrette over heavy cream dressings.";
+        } else if (cleanContent.includes('pasta') || cleanContent.includes('pizza') || cleanContent.includes('carbonara') || cleanContent.includes('italian')) {
+          replyText = isHindi
+            ? "Italian Master Tip: Carbonara mein kabhi cream mat daalein! Egg yolks, Pecorino Romano cheese aur pasta starchy water se natural creamy sauce banayein. Serve with Chianti red wine."
+            : "Italian Secret: Never use cream in authentic Carbonara! Emulsify egg yolks, freshly grated Pecorino Romano, and starchy pasta water. Pair with a Chianti or Pinot Grigio.";
+        } else if (cleanContent.includes('air fryer') || cleanContent.includes('oven') || cleanContent.includes('baking') || cleanContent.includes('roast')) {
+          replyText = isHindi
+            ? "Air Fryer & Baking Pro Tip: Air fryer ko 3 min preheat karein. Light oil spray se food crisp banta hai. Baking cakes ke liye room temperature ingredients zaroori hain!"
+            : "Air Fryer & Baking Pro Tips: Always preheat your air fryer for 3 mins and use light oil spray for extra crispiness. For baking, ensure eggs & butter are at room temperature.";
+        } else if (cleanContent.includes('chai') || cleanContent.includes('tea') || cleanContent.includes('coffee') || cleanContent.includes('drink')) {
+          replyText = isHindi
+            ? "Masala Chai Secret: Ginger aur Cardamom ko paani boil hote hi kuut kar daalein, doodh ke sath nahi. Doodh daalne ke baad low flame par 3 min simmer karein perfect kadak chai ke liye!"
+            : "Masala Chai Perfection: Crushed ginger, cardamom & cloves should boil in water first before adding tea leaves & milk. Simmer on low heat for 3 mins for rich aromatics.";
+        } else if (cleanContent.includes('spices') || cleanContent.includes('masala') || cleanContent.includes('tadka')) {
+          replyText = isHindi
+            ? "Tadka & Spices Secret: Whole spices (Jeera, Mustard, Bay leaf) ko hamesha hot Ghee/Oil mein 15 seconds crackle hone dein taaki essential oils release hon. Kashmiri chili color ke liye best hai!"
+            : "Tempering Mastery: Bloom whole spices (cumin, mustard, cardamom) in hot Ghee/Oil for 15 seconds to release volatile oils before adding onions or tomatoes.";
+        } else if (cleanContent.includes('knife') || cleanContent.includes('chaku') || cleanContent.includes('cut') || cleanContent.includes('chopping')) {
+          replyText = isHindi
+            ? "Kitchen Tools Tip: Sabziyon ke liye 6.5-inch Japanese Nakiri knife ya 8-inch Damascus Chef Knife best hai. Pinch grip se knife pakdein safe & fast chopping ke liye!"
+            : "Knife Mastery: Use an 8-inch Damascus Chef Knife for general prep or a Japanese Nakiri for vegetables. Maintain blade sharpness at 15 degrees with a ceramic honing rod.";
+        } else if (cleanContent.includes('subah') || cleanContent.includes('breakfast') || cleanContent.includes('nashta')) {
+          replyText = isHindi
+            ? "Gourmet Nashta Idea: Avocado Toast with Poached Egg, Sourdough Burrata, ya Oats Chela with Coconut Chutney try karein! High energy aur clean nutrition ke liye perfect hai."
+            : "Elevated Breakfast: Try Sous-Vide Eggs on sourdough, Avocado Toast with microgreens, or Artisanal Burrata with heirloom tomatoes for sustained morning energy.";
+        } else if (cleanContent.includes('plating') || cleanContent.includes('art') || cleanContent.includes('decorate')) {
+          replyText = "Plating is visual poetry! Follow the rule of odds (3 or 5 elements), use offset tweezers for microgreens, create vertical height, and use sauce sweeps or balsamic pearls for contrast.";
+        } else if (isHindi) {
+          replyText = "Namaste! Main aapka Kitchen Hub Master Chef & Sommelier AI hoon. Aap mujhse recipes, masala secrets, ingredient substitutes, weight loss diet, ya wine pairings ke baare mein kuch bhi pooch sakte hain!";
         }
-      } else if (cleanContent.includes('biryani') || cleanContent.includes('pulao') || cleanContent.includes('rice')) {
-        if (isHindi) {
-          replyText = "Biryani ke sath sabse best pairing: Rich Mutton/Chicken Biryani ke sath a Medium-bodied Syrah/Shiraz ya chilled Grenache Rosé perfect lagti hai. Ye spices ko enhance karti hai bina garmi badhaye. Aur Raita hamesha roasted cumin (jeera) ke sath serve karein!";
-        } else {
-          replyText = "Biryani demands a wine that respects rich spices! A medium-bodied Shiraz/Syrah or a chilled Grenache Rosé balances aromatics beautifully without clashing with garlic or saffron. Serve with roasted cumin cucumber raita.";
-        }
-      } else if (cleanContent.includes('knife') || cleanContent.includes('chaku') || cleanContent.includes('cut') || cleanContent.includes('chopping')) {
-        if (isHindi) {
-          replyText = "Kitchen mein sabse zaruri tools: Sabziyon ke liye 6.5-inch Japanese Nakiri knife ya 8-inch Damascus Chef Knife best hai. Knife ki dhaar tez rakhne ke liye Ceramic Honing Rod use karein. Hamesha pinch grip se knife pakdein safe cutting ke liye!";
-        } else {
-          replyText = "The foundation of knife work: Use an 8-inch Damascus Chef Knife for general prep, or a Japanese Nakiri for vegetables. Maintain the blade with a ceramic honing rod at a 15-degree angle. Master the 'pinch grip' at the bolster for maximum control.";
-        }
-      } else if (cleanContent.includes('subah') || cleanContent.includes('breakfast') || cleanContent.includes('nashta') || cleanContent.includes('kya cook')) {
-        if (isHindi) {
-          replyText = "Healthy & Gourmet Nashta Suggestion: Avocado Toast with Poached Egg & Microgreens, ya Artisanal Burrata with Heirloom Tomatoes try karein! Dosh/Idli pasand hai toh coconut chutney mein curry leaves tempering zaroori hai.";
-        } else {
-          replyText = "For an elevated breakfast, try our Artisanal Burrata with Heirloom Tomatoes or Sous-Vide Eggs on sourdough toast topped with microgreens and cold-pressed extra virgin olive oil.";
-        }
-      } else if (cleanContent.includes('steak') || cleanContent.includes('wagyu') || cleanContent.includes('beef') || cleanContent.includes('ribeye')) {
-        replyText = "Ah, the Wagyu Ribeye! A spectacular selection. To pair with its intense marbling, I highly recommend a bold Cabernet Sauvignon from Napa Valley, or a classic Italian Barolo. The powerful tannins and high acidity slice through the marbled fat, releasing a symphony of flavor.";
-      } else if (cleanContent.includes('lemon') || cleanContent.includes('tart') || cleanContent.includes('dessert') || cleanContent.includes('sweet') || cleanContent.includes('meetha')) {
-        replyText = "For desserts like Meyer Lemon Meringue or French Patisserie, pair with a glass of Sauternes (Sémillon-Sauvignon blend) or a late-harvest Riesling. The honeyed sweetness cradles sharp citrus effortlessly.";
-      } else if (cleanContent.includes('fish') || cleanContent.includes('halibut') || cleanContent.includes('seafood') || cleanContent.includes('machli')) {
-        replyText = "For Halibut or delicate Seafood in Saffron Broth, choose a mineral-forward dry white wine like Grand Cru Chablis (Chardonnay) or a Condrieu (Viognier). Its delicate floral notes complement seafood without overpowering it.";
-      } else if (cleanContent.includes('plating') || cleanContent.includes('art') || cleanContent.includes('decorate')) {
-        replyText = "Plating is visual poetry! Follow the rule of odds (3 or 5 elements), use offset tweezers for microgreens, create vertical height, and apply sauce sweeps or balsamic pearls for luxury contrast.";
-      } else if (isHindi) {
-        replyText = "Namaste! Main aapka Kitchen Hub Chef & Sommelier AI hoon. Aap mujhse recipes, wine pairings, masala tricks, ya kitchen equipment ke baare mein Hindi, Hinglish ya English mein pooch sakte hain!";
-      }
 
-      const agentMsg: Message = {
-        senderId: 'sommelier',
-        receiverId: 'user-current',
-        content: replyText,
-        createdAt: new Date().toISOString()
-      };
+        const agentMsg: Message = {
+          senderId: 'sommelier',
+          receiverId: 'user-current',
+          content: replyText,
+          createdAt: new Date().toISOString()
+        };
 
-      setMessages(prev => [...prev, agentMsg]);
-    }, 600);
-  };
+        setMessages(prev => [...prev, agentMsg]);
+      }, 500);
+    };
 
   return (
     <AppContext.Provider value={{
