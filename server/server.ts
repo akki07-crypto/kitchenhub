@@ -627,14 +627,18 @@ app.post('/api/messages', async (req, res) => {
 });
 
 // Serve static files from the React frontend build
-const distPath = path.join(__dirname, '../dist');
+const distPath = path.resolve(process.cwd(), 'dist');
 app.use(express.static(distPath));
 
-// Fallback to index.html for React Router routing
-app.get('*all', (req, res) => {
+// Fallback to index.html for React SPA routing
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API route not found' });
+  }
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
   console.log(`Express Kitchen Hub Server running on port ${PORT}`);
 });
+
