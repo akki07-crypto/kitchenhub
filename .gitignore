@@ -28,4 +28,8 @@ dist-ssr
 .env
 .env.local
 .env.*.local
-
+# Presentation (local only - do not push)
+KitchenHub-Presentation.html
+KitchenHub-Presentation.pptx
+*.pptx
+make_ppt.py
