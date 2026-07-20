@@ -269,7 +269,7 @@ const Auth: React.FC = () => {
                   value={signInEmail}
                   onChange={(e) => setSignInEmail(e.target.value)}
                   required
-                  style={{ width: '100%', paddingLeft: '36px', height: '38px', fontSize: '0.82rem', background: 'rgba(7,9,14,0.5)', borderColor: 'rgba(197,168,128,0.2)', color: '#ffffff' }}
+                  style={{ width: '100%', padding: '0 12px 0 36px', height: '40px', fontSize: '0.82rem', background: 'rgba(7,9,14,0.6)', borderColor: 'rgba(197,168,128,0.25)', color: '#ffffff', borderRadius: '8px', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
@@ -277,7 +277,7 @@ const Auth: React.FC = () => {
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label" style={{ fontSize: '0.7rem', marginBottom: '6px' }}>Account Password</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }}>
+                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 2, pointerEvents: 'none' }}>
                   <Key size={14} />
                 </span>
                 <input
@@ -287,7 +287,7 @@ const Auth: React.FC = () => {
                   value={signInPassword}
                   onChange={(e) => setSignInPassword(e.target.value)}
                   required
-                  style={{ width: '100%', paddingLeft: '36px', height: '38px', fontSize: '0.82rem', background: 'rgba(7,9,14,0.5)', borderColor: 'rgba(197,168,128,0.2)', color: '#ffffff' }}
+                  style={{ width: '100%', padding: '0 12px 0 36px', height: '40px', fontSize: '0.82rem', background: 'rgba(7,9,14,0.6)', borderColor: 'rgba(197,168,128,0.25)', color: '#ffffff', borderRadius: '8px', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
@@ -363,7 +363,7 @@ const Auth: React.FC = () => {
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label" style={{ fontSize: '0.68rem', marginBottom: '4px' }}>Full Name</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }}>
+                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 2, pointerEvents: 'none' }}>
                   <User size={14} />
                 </span>
                 <input
@@ -373,7 +373,7 @@ const Auth: React.FC = () => {
                   value={signUpName}
                   onChange={(e) => setSignUpName(e.target.value)}
                   required
-                  style={{ width: '100%', paddingLeft: '36px', height: '36px', fontSize: '0.8rem', background: 'rgba(7,9,14,0.5)', borderColor: 'rgba(197,168,128,0.2)', color: '#ffffff' }}
+                  style={{ width: '100%', padding: '0 12px 0 36px', height: '40px', fontSize: '0.82rem', background: 'rgba(7,9,14,0.6)', borderColor: 'rgba(197,168,128,0.25)', color: '#ffffff', borderRadius: '8px', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
@@ -381,7 +381,7 @@ const Auth: React.FC = () => {
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label" style={{ fontSize: '0.68rem', marginBottom: '4px' }}>Email Address</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }}>
+                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 2, pointerEvents: 'none' }}>
                   <Mail size={14} />
                 </span>
                 <input
@@ -391,7 +391,7 @@ const Auth: React.FC = () => {
                   value={signUpEmail}
                   onChange={(e) => setSignUpEmail(e.target.value)}
                   required
-                  style={{ width: '100%', paddingLeft: '36px', height: '36px', fontSize: '0.8rem', background: 'rgba(7,9,14,0.5)', borderColor: 'rgba(197,168,128,0.2)', color: '#ffffff' }}
+                  style={{ width: '100%', padding: '0 12px 0 36px', height: '40px', fontSize: '0.82rem', background: 'rgba(7,9,14,0.6)', borderColor: 'rgba(197,168,128,0.25)', color: '#ffffff', borderRadius: '8px', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
@@ -399,7 +399,7 @@ const Auth: React.FC = () => {
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label" style={{ fontSize: '0.68rem', marginBottom: '4px' }}>Choose Password</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }}>
+                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 2, pointerEvents: 'none' }}>
                   <Key size={14} />
                 </span>
                 <input
@@ -409,7 +409,7 @@ const Auth: React.FC = () => {
                   value={signUpPassword}
                   onChange={(e) => setSignUpPassword(e.target.value)}
                   required
-                  style={{ width: '100%', paddingLeft: '36px', height: '36px', fontSize: '0.8rem', background: 'rgba(7,9,14,0.5)', borderColor: 'rgba(197,168,128,0.2)', color: '#ffffff' }}
+                  style={{ width: '100%', padding: '0 12px 0 36px', height: '40px', fontSize: '0.82rem', background: 'rgba(7,9,14,0.6)', borderColor: 'rgba(197,168,128,0.25)', color: '#ffffff', borderRadius: '8px', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
@@ -418,7 +418,7 @@ const Auth: React.FC = () => {
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label" style={{ fontSize: '0.68rem', marginBottom: '4px' }}>Register As</label>
               <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }}>
+                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 2, pointerEvents: 'none' }}>
                   <Landmark size={14} />
                 </span>
                 <select
@@ -427,17 +427,20 @@ const Auth: React.FC = () => {
                   onChange={(e: any) => setSignUpRole(e.target.value)}
                   style={{ 
                     width: '100%', 
-                    paddingLeft: '36px', 
-                    height: '36px', 
-                    fontSize: '0.8rem', 
+                    padding: '0 12px 0 36px', 
+                    height: '40px', 
+                    fontSize: '0.82rem', 
                     background: '#07090e', 
                     color: '#ffffff', 
                     borderColor: 'rgba(197,168,128,0.25)',
-                    colorScheme: 'dark'
+                    colorScheme: 'dark',
+                    borderRadius: '8px',
+                    boxSizing: 'border-box',
+                    lineHeight: '40px'
                   }}
                 >
-                  <option value="user" style={{ background: '#07090e', color: '#ffffff' }}>Home Cook (Normal User)</option>
-                  <option value="chef" style={{ background: '#07090e', color: '#ffffff' }}>Professional Chef (Application)</option>
+                  <option value="user" style={{ background: '#0d1117', color: '#ffffff', padding: '10px' }}>Home Cook (Normal User)</option>
+                  <option value="chef" style={{ background: '#0d1117', color: '#ffffff', padding: '10px' }}>Professional Chef (Application)</option>
                 </select>
               </div>
             </div>
@@ -454,7 +457,7 @@ const Auth: React.FC = () => {
                     value={chefSpecialty}
                     onChange={(e) => setChefSpecialty(e.target.value)}
                     required
-                    style={{ width: '100%', height: '36px', fontSize: '0.8rem', background: 'rgba(7,9,14,0.5)', borderColor: 'rgba(197,168,128,0.2)', color: '#ffffff' }}
+                    style={{ width: '100%', padding: '0 12px 0 36px', height: '40px', fontSize: '0.82rem', background: 'rgba(7,9,14,0.6)', borderColor: 'rgba(197,168,128,0.25)', color: '#ffffff', borderRadius: '8px', boxSizing: 'border-box' }}
                   />
                 </div>
                 <div className="form-group" style={{ margin: 0 }}>
@@ -466,7 +469,7 @@ const Auth: React.FC = () => {
                     value={chefBio}
                     onChange={(e) => setChefBio(e.target.value)}
                     required
-                    style={{ width: '100%', fontSize: '0.8rem', padding: '8px 12px', background: 'rgba(7,9,14,0.5)', borderColor: 'rgba(197,168,128,0.2)', color: '#ffffff' }}
+                    style={{ width: '100%', fontSize: '0.8rem', padding: '8px 12px', background: 'rgba(7,9,14,0.6)', borderColor: 'rgba(197,168,128,0.25)', color: '#ffffff', borderRadius: '8px', boxSizing: 'border-box' }}
                   />
                 </div>
               </div>
