@@ -636,28 +636,31 @@ app.post('/api/ai/chat', async (req, res) => {
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (apiKey && apiKey.trim() !== '') {
-      try {
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-        const systemPrompt = "You are Chef Concierge & Master Sommelier at Kitchen Hub. You are an expert gourmet chef, nutritionist, and sommelier. Give helpful, warm, detailed culinary advice, wine pairings, ingredient substitutions, and step-by-step recipes. Support English, Hindi, and Hinglish. Keep responses concise and elegant.";
+      const systemPrompt = "You are Chef Concierge & Master Sommelier at Kitchen Hub. You are an expert gourmet chef, nutritionist, and sommelier. Give helpful, warm, detailed culinary advice, wine pairings, ingredient substitutions, and step-by-step recipes. Support English, Hindi, and Hinglish. Keep responses concise and elegant.";
+      const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-pro'];
 
-        const response = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
-              { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser Question: ${message}` }] }
-            ]
-          })
-        });
+      for (const model of models) {
+        try {
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`;
+          const response = await fetch(geminiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser Question: ${message}` }] }
+              ]
+            })
+          });
 
-        const data = await response.json();
-        const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          const data = await response.json();
+          const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        if (replyText) {
-          return res.json({ reply: replyText });
+          if (replyText) {
+            return res.json({ reply: replyText });
+          }
+        } catch (geminiErr) {
+          console.warn(`Gemini ${model} call error:`, geminiErr);
         }
-      } catch (geminiErr) {
-        console.warn('Gemini API call error, falling back to local intelligence:', geminiErr);
       }
     }
 
