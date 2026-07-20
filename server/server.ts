@@ -677,7 +677,7 @@ const distPath = path.resolve(process.cwd(), 'dist');
 app.use(express.static(distPath));
 
 // Fallback to index.html for React SPA routing
-app.get('*', (req, res) => {
+app.use((req, res) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'API route not found' });
   }
