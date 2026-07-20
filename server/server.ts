@@ -3,6 +3,13 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import crypto from 'crypto';
+
+// Polyfill globalThis.crypto for Node 18 MongoDB driver ScramSHA256 authentication
+if (typeof globalThis.crypto === 'undefined') {
+  (globalThis as any).crypto = crypto;
+}
+
 
 // Import Mongoose Models
 import User from './models/User';
