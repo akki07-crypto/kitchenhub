@@ -1200,7 +1200,12 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         // Hindi / Hinglish query detection
         const isHindi = cleanContent.includes('kaise') || cleanContent.includes('kya') || cleanContent.includes('batao') || cleanContent.includes('karo') || cleanContent.includes('banaye') || cleanContent.includes('namaste') || cleanContent.includes('khana') || cleanContent.includes('bhai') || cleanContent.includes('madad') || cleanContent.includes('chahiye');
 
-        if (cleanContent.includes('paneer') || cleanContent.includes('tikka') || cleanContent.includes('cottage cheese')) {
+        // General suggestions & greetings
+        if (cleanContent.includes('suggest') || cleanContent.includes('recommend') || cleanContent.includes('kya banaye') || cleanContent.includes('menu') || cleanContent.includes('option') || cleanContent.includes('idea') || cleanContent.includes('help') || cleanContent === 'hi' || cleanContent === 'hello' || cleanContent === 'hey') {
+          replyText = isHindi
+            ? "Aaj ke liye 3 Shandaar Chef Recommendations:\n1. 🥩 Wagyu Ribeye Steak — High Protein (55g)\n2. 🐟 Chef Melissa's Grilled Salmon — Medium Cal (520 Kcal)\n3. 🥗 Artisanal Burrata Salad — Light & Fresh (320 Kcal)\n\nAap mujhse kisi specific dish (jaise Biryani, Paneer, Pasta, Dosa, Egg Substitute, Diet Plan) ke baare mein bhi pooch sakte hain!"
+            : "Here are 3 Gourmet Chef Recommendations for you today:\n1. 🥩 Wagyu Ribeye Steak — High Protein (55g)\n2. 🐟 Chef Melissa's Grilled Salmon — Balanced (520 Kcal)\n3. 🥗 Artisanal Burrata Salad — Light & Fresh (320 Kcal)\n\nFeel free to ask me about any specific dish, recipe steps, wine pairings, or ingredient substitutions!";
+        } else if (cleanContent.includes('paneer') || cleanContent.includes('tikka') || cleanContent.includes('cottage cheese')) {
           replyText = isHindi
             ? "Paneer Tikka ke liye master tip: Paneer ko 30 min hung curd, roasted besan, mustard oil aur Kashmiri chili powder mein marinate karein. Coal dhungar technique se restaurant-style smoky flavor milta hai!"
             : "For Paneer Tikka, marinate in hung curd, roasted besan, mustard oil, and Kashmiri chili for 30+ mins. Use a glowing charcoal briquette for authentic smoky tandoori aroma!";
