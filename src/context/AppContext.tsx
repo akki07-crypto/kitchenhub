@@ -1158,8 +1158,8 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
-  // Concierge chat response system (Multilingual Hindi + Hinglish + English intelligence)
-  const sendMessage = (content: string) => {
+  // Concierge chat response system (Supports backend Gemini AI + smart multilingual fallback)
+  const sendMessage = async (content: string) => {
     const userMsg: Message = {
       senderId: 'user-current',
       receiverId: 'sommelier',
@@ -1169,6 +1169,30 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     setMessages(prev => [...prev, userMsg]);
 
+    // 1. Try Gemini AI API via backend
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: content })
+      });
+      const data = await res.json();
+
+      if (res.ok && data && data.reply) {
+        const agentMsg: Message = {
+          senderId: 'sommelier',
+          receiverId: 'user-current',
+          content: data.reply,
+          createdAt: new Date().toISOString()
+        };
+        setMessages(prev => [...prev, agentMsg]);
+        return;
+      }
+    } catch (e) {
+      console.warn('Backend AI chat unavailable, using local intelligence:', e);
+    }
+
+    // 2. Local Fallback Intelligence (Hindi, Hinglish & English)
     setTimeout(() => {
       let replyText = "That sounds fascinating! As your Kitchen Hub Concierge, I would suggest matching that flavor profile with a structured French Chardonnay or a crisp Sauvignon Blanc to lift the aromatics.";
       const cleanContent = content.toLowerCase();
@@ -1209,7 +1233,7 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       } else if (cleanContent.includes('plating') || cleanContent.includes('art') || cleanContent.includes('decorate')) {
         replyText = "Plating is visual poetry! Follow the rule of odds (3 or 5 elements), use offset tweezers for microgreens, create vertical height, and apply sauce sweeps or balsamic pearls for luxury contrast.";
       } else if (isHindi) {
-        replyText = "Namaste! Main aapka Kitchen Hub Chef & Sommelier AI hoon. Aap mujhse recipes, wine pairings, masala tricks, ya kitchen equipment ke baare mein Hindi ya English mein pooch sakte hain!";
+        replyText = "Namaste! Main aapka Kitchen Hub Chef & Sommelier AI hoon. Aap mujhse recipes, wine pairings, masala tricks, ya kitchen equipment ke baare mein Hindi, Hinglish ya English mein pooch sakte hain!";
       }
 
       const agentMsg: Message = {
@@ -1220,7 +1244,7 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       };
 
       setMessages(prev => [...prev, agentMsg]);
-    }, 1000);
+    }, 600);
   };
 
   return (

@@ -626,6 +626,49 @@ app.post('/api/messages', async (req, res) => {
   }
 });
 
+// 7. AI Culinary Concierge Endpoint (Google Gemini API with graceful fallback)
+app.post('/api/ai/chat', async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ error: 'Message content is required' });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (apiKey && apiKey.trim() !== '') {
+      try {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const systemPrompt = "You are Chef Concierge & Master Sommelier at Kitchen Hub. You are an expert gourmet chef, nutritionist, and sommelier. Give helpful, warm, detailed culinary advice, wine pairings, ingredient substitutions, and step-by-step recipes. Support English, Hindi, and Hinglish. Keep responses concise and elegant.";
+
+        const response = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              { role: 'user', parts: [{ text: `${systemPrompt}\n\nUser Question: ${message}` }] }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (replyText) {
+          return res.json({ reply: replyText });
+        }
+      } catch (geminiErr) {
+        console.warn('Gemini API call error, falling back to local intelligence:', geminiErr);
+      }
+    }
+
+    // Return null reply to signal frontend to use smart local intelligence
+    res.json({ reply: null });
+  } catch (err) {
+    res.status(500).json({ error: 'AI processing error' });
+  }
+});
+
+
 // Serve static files from the React frontend build
 const distPath = path.resolve(process.cwd(), 'dist');
 app.use(express.static(distPath));
